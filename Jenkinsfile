@@ -70,17 +70,18 @@ pipeline {
             }
         }
 
-        stage('Deploy with Helm') {
-            steps {
-                echo "Deploying image ${IMAGE_TAG} with Helm..."
-                sh '''
-                    /snap/bin/helm upgrade --install devops-app helm/devops-app \
-                      --namespace default \
-                      --set image.tag=${IMAGE_TAG}
+ stage('Deploy with Helm') {
+    steps {
+        echo "Deploying image ${IMAGE_TAG} with Helm..."
+        sh '''
+            /snap/bin/helm upgrade --install devops-app helm/devops-app \
+              --namespace default \
+              --set image.tag=${IMAGE_TAG} \
+              --force-conflicts
 
-                    kubectl rollout status deployment/devops-app
-                    /snap/bin/helm status devops-app --namespace default
-                '''
+            kubectl rollout status deployment/devops-app
+            /snap/bin/helm status devops-app --namespace default
+        '''
             }
         }
 
