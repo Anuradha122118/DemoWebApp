@@ -1,0 +1,17 @@
+replicaCount: 2
+
+image:
+  repository: 288743750282.dkr.ecr.ap-south-1.amazonaws.com/devops-app
+  tag: "6"
+  pullPolicy: IfNotPresent
+
+imagePullSecrets:
+  - name: ecr-secret
+
+containerPort: 8080
+
+service:
+  type: NodePort
+  port: 8080
+  targetPort: 8080
+  nodePort: 30080
