@@ -70,14 +70,16 @@ pipeline {
             }
         }
 
-        stage('Deploy to Kubernetes') {
+        stage('Deploy with Helm') {
             steps {
-                echo "Deploying image ${IMAGE_TAG} to Kubernetes..."
+                echo "Deploying image ${IMAGE_TAG} with Helm..."
                 sh '''
-                    kubectl set image deployment/devops-app \
-                      devops-app=${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
+                    /snap/bin/helm upgrade --install devops-app helm/devops-app \
+                      --namespace default \
+                      --set image.tag=${IMAGE_TAG}
 
                     kubectl rollout status deployment/devops-app
+                    /snap/bin/helm status devops-app --namespace default
                 '''
             }
         }
