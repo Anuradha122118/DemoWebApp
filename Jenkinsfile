@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -9,7 +10,6 @@ pipeline {
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 echo 'Checking out DemoWebApp from GitHub...'
@@ -25,11 +25,55 @@ pipeline {
             }
         }
 
+        stage('SonarQube Cloud Analysis') {
+            steps {
+                echo 'Running SonarQube Cloud analysis...'
+                withCredentials([
+                    string(credentialsId: 'sonar-token',
+                           variable: 'SONAR_TOKEN')
+                ]) {
+                    sh '''
+                        mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+                          -Dsonar.projectKey=Anuradha122118_DemoWebApp \
+                          -Dsonar.organization=anuradha122118 \
+                          -Dsonar.host.url=https://sonarcloud.io \
+                          -Dsonar.token="$SONAR_TOKEN"
+                    '''
+                }
+            }
+        }
+
+        stage('Trivy Filesystem Scan') {
+            steps {
+                echo 'Scanning source code and configuration files...'
+                sh '''
+                    trivy --config "" fs \
+                      --scanners vuln,misconfig,secret \
+                      --exit-code 0 \
+                      --skip-dirs .git \
+                      --skip-dirs .m2 \
+                      .
+                '''
+            }
+        }
+
         stage('Docker Build') {
             steps {
                 echo "Building Docker image: ${ECR_REPOSITORY}:${IMAGE_TAG}"
                 sh '''
                     docker build -t ${ECR_REPOSITORY}:${IMAGE_TAG} .
+                '''
+            }
+        }
+
+        stage('Trivy Image Scan') {
+            steps {
+                echo "Scanning Docker image ${ECR_REPOSITORY}:${IMAGE_TAG}..."
+                sh '''
+                    trivy --config "" image \
+                      --severity HIGH,CRITICAL \
+                      --exit-code 0 \
+                      ${ECR_REPOSITORY}:${IMAGE_TAG}
                 '''
             }
         }
@@ -70,18 +114,18 @@ pipeline {
             }
         }
 
- stage('Deploy with Helm') {
-    steps {
-        echo "Deploying image ${IMAGE_TAG} with Helm..."
-        sh '''
-            /snap/bin/helm upgrade --install devops-app helm/devops-app \
-              --namespace default \
-              --set image.tag=${IMAGE_TAG} \
-              --force-conflicts
+        stage('Deploy with Helm') {
+            steps {
+                echo "Deploying image ${IMAGE_TAG} with Helm..."
+                sh '''
+                    /snap/bin/helm upgrade --install devops-app helm/devops-app \
+                      --namespace default \
+                      --set image.tag=${IMAGE_TAG} \
+                      --force-conflicts
 
-            kubectl rollout status deployment/devops-app
-            /snap/bin/helm status devops-app --namespace default
-        '''
+                    kubectl rollout status deployment/devops-app
+                    /snap/bin/helm status devops-app --namespace default
+                '''
             }
         }
 
@@ -111,3 +155,5 @@ pipeline {
         }
     }
 }
+/Trivy Filesystem Scan
+
