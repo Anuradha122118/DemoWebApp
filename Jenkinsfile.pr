@@ -11,10 +11,10 @@ pipeline {
         }
 
         stage('Maven Build') {
-            steps {
-                sh 'mvn clean package'
-            }
-        }
+    steps {
+        sh 'mvn clean verify'
+    }
+}
 
         stage('SonarQube Analysis') {
             steps {
