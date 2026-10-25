@@ -16,10 +16,29 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarCloud') {
+                    sh '''
+                        mvn sonar:sonar \
+                          -Dsonar.projectKey=Anuradha122118_DemoWebApp \
+                          -Dsonar.organization=anuradha122118 \
+                          -Dsonar.host.url=https://sonarcloud.io
+                    '''
+                }
+            }
+        }
+
         stage('PR Validation Complete') {
             steps {
-                echo 'Pull request validation completed successfully'
+                echo 'Build and SonarQube analysis completed'
             }
+        }
+    }
+
+    post {
+        always {
+            echo 'PR validation pipeline finished'
         }
     }
 }
