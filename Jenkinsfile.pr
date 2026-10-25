@@ -1,0 +1,25 @@
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checking out pull request code'
+                checkout scm
+            }
+        }
+
+        stage('Maven Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('PR Validation Complete') {
+            steps {
+                echo 'Pull request validation completed successfully'
+            }
+        }
+    }
+}
