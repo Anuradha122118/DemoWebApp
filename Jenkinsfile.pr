@@ -16,24 +16,32 @@ pipeline {
             }
         }
 
-        
-stage('SonarQube Analysis') {
-    steps {
-        withSonarQubeEnv('SonarCloud') {
-            sh '''
-                mvn org.sonarsource.scanner.maven:sonar-maven-plugin:5.3.0.6276:sonar \
-                  -Dsonar.projectKey=Anuradha122118_DemoWebApp \
-                  -Dsonar.organization=anuradha122118 \
-                  -Dsonar.host.url=https://sonarcloud.io
-            '''
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarCloud') {
+                    sh '''
+                        mvn org.sonarsource.scanner.maven:sonar-maven-plugin:5.3.0.6276:sonar \
+                          -Dsonar.projectKey=Anuradha122118_DemoWebApp \
+                          -Dsonar.organization=anuradha122118 \
+                          -Dsonar.host.url=https://sonarcloud.io
+                    '''
+                }
+            }
         }
-    }
-}
 
+        stage('Trivy Security Scan') {
+            steps {
+                sh '''
+                    trivy fs --config "" \
+                      --scanners vuln,secret,misconfig \
+                      --severity HIGH,CRITICAL .
+                '''
+            }
+        }
 
         stage('PR Validation Complete') {
             steps {
-                echo 'Build and SonarQube analysis completed'
+                echo 'Build, SonarQube analysis and Trivy scan completed'
             }
         }
     }
