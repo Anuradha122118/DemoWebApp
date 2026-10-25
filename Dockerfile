@@ -1,8 +1,12 @@
 FROM tomcat:9.0-jdk17-temurin
 
-RUN rm -rf /usr/local/tomcat/webapps/*
+RUN rm -rf /usr/local/tomcat/webapps/* \
+    && useradd --system --user-group appuser \
+    && chown -R appuser:appuser /usr/local/tomcat
 
-COPY target/DemoWebApp.war /usr/local/tomcat/webapps/ROOT.war
+COPY --chown=appuser:appuser target/DemoWebApp.war /usr/local/tomcat/webapps/ROOT.war
+
+USER appuser
 
 EXPOSE 8080
 
