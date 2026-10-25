@@ -21,9 +21,10 @@ pipeline {
                 withSonarQubeEnv('SonarCloud') {
                     sh '''
                         mvn org.sonarsource.scanner.maven:sonar-maven-plugin:5.3.0.6276:sonar \
-                          -Dsonar.projectKey=Anuradha122118_DemoWebApp \
-                          -Dsonar.organization=anuradha122118 \
-                          -Dsonar.host.url=https://sonarcloud.io
+      -Dsonar.projectKey=Anuradha122118_DemoWebApp \
+      -Dsonar.organization=anuradha122118 \
+      -Dsonar.host.url=https://sonarcloud.io \
+      -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
                     '''
                 }
             }
