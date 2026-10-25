@@ -41,7 +41,7 @@ pipeline {
 
         stage('PR Validation Complete') {
             steps {
-                echo 'Build, SonarQube analysis and Trivy scan completed'
+                echo 'PR validation: Maven, SonarQube and Trivy stages completed'
             }
         }
     }
