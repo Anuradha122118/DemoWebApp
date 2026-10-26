@@ -101,6 +101,17 @@ pipeline {
             }
         }
 
+        stage('Production Approval') {
+            steps {
+                timeout(time: 15, unit: 'MINUTES') {
+                    input(
+                        message: "Approve deployment of DemoWebApp build ${BUILD_NUMBER}, image tag ${IMAGE_TAG}?",
+                        ok: 'Approve Deployment'
+                    )
+                }
+            }
+        }
+
         stage('Refresh ECR Secret') {
             steps {
                 echo 'Refreshing Kubernetes ECR pull secret...'
