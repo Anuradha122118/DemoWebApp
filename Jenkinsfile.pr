@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
 
@@ -12,7 +11,7 @@ pipeline {
 
         stage('Maven Build') {
             steps {
-                sh 'mvn clean package'
+                sh 'mvn clean verify'
             }
         }
 
@@ -29,19 +28,28 @@ pipeline {
             }
         }
 
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 10, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
         stage('Trivy Security Scan') {
             steps {
                 sh '''
                     trivy fs --config "" \
                       --scanners vuln,secret,misconfig \
-                      --severity HIGH,CRITICAL .
+                      --severity HIGH,CRITICAL \
+                      --exit-code 1 .
                 '''
             }
         }
 
         stage('PR Validation Complete') {
             steps {
-                echo 'Build, SonarQube analysis and Trivy scan completed'
+                echo 'Build, Quality Gate and Trivy scan completed'
             }
         }
     }
