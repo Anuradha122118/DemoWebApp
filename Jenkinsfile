@@ -21,7 +21,7 @@ pipeline {
         stage('Maven Build') {
             steps {
                 echo 'Building application with Maven...'
-                sh 'mvn clean package'
+                sh 'mvn clean verify'
             }
         }
 
