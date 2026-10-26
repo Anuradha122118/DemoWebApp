@@ -29,6 +29,14 @@ pipeline {
             }
         }
 
+        stage('Quality Gate') {
+            steps {
+                timeout(time: 10, unit: 'MINUTES') {
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
         stage('Trivy Security Scan') {
             steps {
                 sh '''
@@ -41,7 +49,7 @@ pipeline {
 
         stage('PR Validation Complete') {
             steps {
-                echo 'Build, SonarQube analysis and Trivy scan completed'
+                echo 'Build, Quality Gate and Trivy scan completed'
             }
         }
     }
@@ -49,7 +57,6 @@ pipeline {
     post {
         always {
             echo 'PR validation pipeline finished'
-// Test automatic Jenkins PR webhook trigger
         }
     }
 }
