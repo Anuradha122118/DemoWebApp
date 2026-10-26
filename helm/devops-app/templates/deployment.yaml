@@ -58,4 +58,3 @@ spec:
           emptyDir: {}
         - name: tomcat-temp-dir
           emptyDir: {}
-
