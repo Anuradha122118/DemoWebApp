@@ -1,4 +1,4 @@
-
+```groovy
 pipeline {
     agent any
 
@@ -42,7 +42,8 @@ pipeline {
                 sh '''
                     trivy fs --config "" \
                       --scanners vuln,secret,misconfig \
-                      --severity HIGH,CRITICAL .
+                      --severity HIGH,CRITICAL \
+                      --exit-code 1 .
                 '''
             }
         }
@@ -60,3 +61,4 @@ pipeline {
         }
     }
 }
+```
