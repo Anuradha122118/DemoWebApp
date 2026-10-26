@@ -49,6 +49,7 @@ pipeline {
     post {
         always {
             echo 'PR validation pipeline finished'
+// Test automatic Jenkins PR webhook trigger
         }
     }
 }
