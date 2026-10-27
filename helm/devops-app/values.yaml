@@ -2,7 +2,7 @@ replicaCount: 2
 
 image:
   repository: 288743750282.dkr.ecr.ap-south-1.amazonaws.com/devops-app
-  tag: "6"
+  tag: "argocd-validation-20261027"
   pullPolicy: IfNotPresent
 
 imagePullSecrets:
